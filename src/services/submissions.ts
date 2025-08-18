@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3001';
+const API_URL = `${window.location.protocol}//${window.location.hostname}:3001`;
 
 export interface SubmissionData {
   station_id: string

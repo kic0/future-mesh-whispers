@@ -1,6 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = `${window.location.protocol}//${window.location.hostname}:3001`;
 
 interface FERDB extends DBSchema {
   submissions: { key: number; value: any };
