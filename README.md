@@ -62,6 +62,11 @@ This project now uses a local MySQL database. To set up the database, follow the
 
     If your MySQL setup uses different credentials, you will need to update the `server/db.js` file.
 
+4.  **Populate Stations:** Before running the application, you need to add at least one station to the `stations` table. The `submissions` table requires a valid `station_id`. You can add a station by running the following SQL query:
+    ```sql
+    INSERT INTO stations (id, label) VALUES ('TOTEM-1', 'Test Totem 1');
+    ```
+
 ## What technologies are used for this project?
 
 This project is built with:
