@@ -7,7 +7,14 @@ const path = require('path');
 const app = express();
 const port = 3001;
 
-app.use(cors());
+const corsOptions = {
+  origin: '*', // Allow all origins
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Create uploads directory if it doesn't exist
