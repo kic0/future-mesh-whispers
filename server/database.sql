@@ -51,3 +51,6 @@ CREATE TABLE `answers` (
   KEY `submission_id` (`submission_id`),
   CONSTRAINT `answers_submission_id_fkey` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE
 );
+
+-- Insert a default station for testing
+INSERT INTO `stations` (`id`, `label`, `active`) VALUES ('TOTEM-1', 'Test Totem 1', true);
