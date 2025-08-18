@@ -1,5 +1,7 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { supabase } from '@/integrations/supabase/client';
+
+const API_URL = 'http://localhost:3001';
+
 interface FERDB extends DBSchema {
   submissions: { key: number; value: any };
   outbox: { key: number; value: any };
@@ -92,7 +94,7 @@ export async function resetCountsIfNewDay() {
   return;
 }
 
-export async function syncOutbox(endpoint?: string) {
+export async function syncOutbox() {
   console.log('[syncOutbox] Attempting to sync...');
   if (!navigator.onLine) {
     console.log('[syncOutbox] Offline. Sync aborted.');
@@ -124,18 +126,22 @@ export async function syncOutbox(endpoint?: string) {
       // 1) Create submission via secure RPC call
       console.log(`[syncOutbox] Inserting submission for item ID: ${item.id} via RPC`);
 
-      const { data: new_submission_id, error: subError } = await supabase
-        .rpc('submit_survey', {
+      const rpcResponse = await fetch(`${API_URL}/rpc/submit_survey`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           station_id_arg: p.station_id,
           gender_arg: p.demographics?.gender ?? null,
           age_arg: p.demographics?.age ?? null,
           resident_arg: typeof p.demographics?.resident === 'boolean' ? p.demographics.resident : null,
-        });
+        }),
+      });
 
-      if (subError || !new_submission_id) {
-        console.error('RPC `submit_survey` failed:', subError);
-        throw subError || new Error('Submission via RPC failed');
+      if (!rpcResponse.ok) {
+        throw new Error('Submission via RPC failed');
       }
+
+      const new_submission_id = await rpcResponse.text();
 
       // Adapt the RPC response to the format the rest of the code expects
       const subData = { id: new_submission_id };
@@ -174,15 +180,23 @@ export async function syncOutbox(endpoint?: string) {
           });
         } else if (att.type === 'audio') {
           console.log(`[syncOutbox] Uploading audio answer for question ${qn}`);
-          const path = `${p.station_id || 'TOTEM-1'}/${subData.id}/q${qn}.webm`;
           const b64 = (att.data || '').split(',')[1] ?? '';
           const binary = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
           const blob = new Blob([binary], { type: att.mime || 'audio/webm' });
 
-          const { error: upErr } = await supabase.storage
-            .from('survey')
-            .upload(path, blob, { contentType: att.mime || 'audio/webm', upsert: true });
-          if (upErr) throw upErr;
+          const formData = new FormData();
+          formData.append('file', blob, `${p.station_id || 'TOTEM-1'}_${subData.id}_q${qn}.webm`);
+
+          const uploadResponse = await fetch(`${API_URL}/upload`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error('Audio upload failed');
+          }
+
+          const { path } = await uploadResponse.json();
           console.log(`[syncOutbox] Audio uploaded to: ${path}`);
 
           answers.push({
@@ -218,8 +232,15 @@ export async function syncOutbox(endpoint?: string) {
       });
 
       console.log(`[syncOutbox] Inserting ${answers.length} answers for submission ID: ${subData.id}`);
-      const { error: ansErr } = await supabase.from('answers').insert(answers);
-      if (ansErr) throw ansErr;
+      const answersResponse = await fetch(`${API_URL}/answers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(answers),
+      });
+
+      if (!answersResponse.ok) {
+        throw new Error('Failed to insert answers');
+      }
       console.log(`[syncOutbox] Answers inserted successfully.`);
 
       // 3) Mark as synced in a separate write
@@ -227,7 +248,7 @@ export async function syncOutbox(endpoint?: string) {
       await db.put('outbox', { ...item, synced: true, syncedAt: Date.now() });
       console.log(`[syncOutbox] Item ID ${item.id} successfully synced.`);
     } catch (e) {
-      console.error(`[syncOutbox] Sync to Supabase failed for item ID: ${item.id}. Will retry later.`, { item, error: e });
+      console.error(`[syncOutbox] Sync to backend failed for item ID: ${item.id}. Will retry later.`, { item, error: e });
     }
   }
 }
