@@ -7,9 +7,8 @@ const connection = mysql.createConnection({
   database: 'survey_db'
 });
 
-connection.connect(error => {
-  if (error) throw error;
-  console.log("Successfully connected to the database.");
-});
+// The connection is automatically established when the first query is made.
+// No need for an explicit connection.connect() call, which can crash the server
+// on a bad configuration. The error will be caught by the query callback instead.
 
 module.exports = connection;
