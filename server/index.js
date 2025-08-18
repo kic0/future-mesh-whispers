@@ -47,15 +47,31 @@ app.post('/submissions', (req, res) => {
 
 // Endpoint to save an answer
 app.post('/answers', (req, res) => {
-  const { submission_id, question_number, question_key, type, storage_path, mime_type, size_bytes, duration_seconds, text_content } = req.body;
-  const sql = 'INSERT INTO answers (submission_id, question_number, question_key, type, storage_path, mime_type, size_bytes, duration_seconds, text_content, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
-  const params = [submission_id, question_number, question_key, type, storage_path, mime_type, size_bytes, duration_seconds, text_content];
-  db.query(sql, params, (err, result) => {
+  const answers = req.body;
+  if (!Array.isArray(answers)) {
+    return res.status(400).send('Expected an array of answers.');
+  }
+
+  const sql = 'INSERT INTO answers (submission_id, question_number, question_key, type, storage_path, mime_type, size_bytes, duration_seconds, text_content, created_at) VALUES ?';
+  const values = answers.map(answer => [
+    answer.submission_id,
+    answer.question_number,
+    answer.question_key,
+    answer.type,
+    answer.storage_path,
+    answer.mime_type,
+    answer.size_bytes,
+    answer.duration_seconds,
+    answer.text_content,
+    new Date()
+  ]);
+
+  db.query(sql, [values], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).send(err);
     }
-    res.status(201).send({ id: result.insertId, ...req.body });
+    res.status(201).send({ insertId: result.insertId });
   });
 });
 
