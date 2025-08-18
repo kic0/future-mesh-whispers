@@ -40,6 +40,28 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
+## Database Setup
+
+This project now uses a local MySQL database. To set up the database, follow these steps:
+
+1.  **Install MySQL:** If you don't have MySQL installed, you can download it from the official [MySQL website](https://dev.mysql.com/downloads/).
+
+2.  **Create the database:** You can create the database and tables by importing the `server/database.sql` file. You can do this using the MySQL command-line client or a GUI tool like MySQL Workbench.
+
+    Using the command-line client:
+    ```sh
+    mysql -u <your_username> -p < survey_db < server/database.sql
+    ```
+    You will be prompted to enter your MySQL password.
+
+3.  **Configure the connection:** The backend server is configured to connect to the database with the following credentials:
+    *   **Host:** `localhost`
+    *   **User:** `root`
+    *   **Password:** (empty)
+    *   **Database:** `survey_db`
+
+    If your MySQL setup uses different credentials, you will need to update the `server/db.js` file.
+
 ## What technologies are used for this project?
 
 This project is built with:
@@ -49,4 +71,7 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Node.js (for the backend)
+- Express.js (for the backend)
+- MySQL (for the database)
 
