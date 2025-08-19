@@ -103,9 +103,8 @@ export async function syncOutbox() {
   console.log('[syncOutbox] Online. Proceeding with sync.');
   const db = await getDB();
 
-  // Read all items first to avoid keeping an IndexedDB transaction open across awaits
   const items = await db.getAll('outbox');
-  const unsynced = items.filter((i: any) => !i.synced);
+  const unsynced = items.filter((i) => !i.synced);
   console.log(`[syncOutbox] Found ${unsynced.length} items to sync.`);
 
   if (unsynced.length === 0) {
@@ -123,9 +122,8 @@ export async function syncOutbox() {
     try {
       const p = item.payload || {};
 
-      // 1) Create submission via secure RPC call
+      // 1) Create submission via RPC call
       console.log(`[syncOutbox] Inserting submission for item ID: ${item.id} via RPC`);
-
       const rpcResponse = await fetch(`${API_URL}/rpc/submit_survey`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -140,16 +138,13 @@ export async function syncOutbox() {
       if (!rpcResponse.ok) {
         throw new Error('Submission via RPC failed');
       }
-
       const new_submission_id = await rpcResponse.text();
-
-      // Adapt the RPC response to the format the rest of the code expects
       const subData = { id: new_submission_id };
       console.log(`[syncOutbox] Submission created with ID: ${subData.id}`);
 
-      // 2) Prepare and upload answers (text inline, audio to storage)
+      // 2) Prepare and upload answers
       const answers: any[] = [];
-      const attachments: Array<{ name: string; data: string; mime:string; type: 'text' | 'audio'; question: number }> = p.attachments || [];
+      const attachments: Array<{ name: string; data: string; mime: string; type: 'text' | 'audio'; question: number }> = p.attachments || [];
       console.log(`[syncOutbox] Processing ${attachments.length} attachments for submission ID: ${subData.id}`);
 
       for (const att of attachments) {
@@ -158,34 +153,31 @@ export async function syncOutbox() {
         if (!qkey) continue;
 
         if (att.type === 'text') {
-          console.log(`[syncOutbox] Preparing text answer for question ${qn}`);
-          // Decode base64 text back to string (we encoded it earlier)
           let text = '';
           try {
             const b64 = (att.data || '').split(',')[1] ?? '';
             text = decodeURIComponent(escape(atob(b64)));
-          } catch {
-            // b64 decoding can fail, default to empty string
-          }
-
+          } catch {}
           answers.push({
             submission_id: subData.id,
             question_number: qn,
             question_key: qkey,
             type: 'text',
-            size_bytes: text.length,
-            storage_path: `inline://q${qn}.txt`, // required non-null field
-            mime_type: 'text/plain',
+            storage_path: `inline://q${qn}.txt`,
             text_content: text,
           });
         } else if (att.type === 'audio') {
-          console.log(`[syncOutbox] Uploading audio answer for question ${qn}`);
           const b64 = (att.data || '').split(',')[1] ?? '';
           const binary = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
           const blob = new Blob([binary], { type: att.mime || 'audio/webm' });
 
           const formData = new FormData();
-          formData.append('file', blob, `${p.station_id || 'TOTEM-1'}_${subData.id}_q${qn}.webm`);
+          formData.append('submission_id', subData.id.toString());
+          formData.append('question_number', qn.toString());
+          formData.append('question_key', qkey);
+          formData.append('mime_type', att.mime || 'audio/webm');
+          formData.append('size_bytes', binary.byteLength.toString());
+          formData.append('audio', blob, att.name);
 
           const uploadResponse = await fetch(`${API_URL}/upload`, {
             method: 'POST',
@@ -193,57 +185,35 @@ export async function syncOutbox() {
           });
 
           if (!uploadResponse.ok) {
-            throw new Error('Audio upload failed');
+            throw new Error(`Audio upload failed for q${qn}: ${await uploadResponse.text()}`);
           }
-
           const { path } = await uploadResponse.json();
-          console.log(`[syncOutbox] Audio uploaded to: ${path}`);
-
           answers.push({
             submission_id: subData.id,
             question_number: qn,
             question_key: qkey,
             type: 'audio',
-            size_bytes: binary.byteLength,
-            duration_seconds: null,
             storage_path: path,
             mime_type: att.mime || 'audio/webm',
-            text_content: null,
+            size_bytes: binary.byteLength,
           });
         }
       }
 
-      // Ensure all 3 questions produce at least one row (even if empty)
-      const presentQs = new Set(answers.map((a) => a.question_number));
-      ([(1 as const), (2 as const), (3 as const)]).forEach((qn) => {
-        if (!presentQs.has(qn)) {
-          const qkey = qKeyMap[qn];
-          answers.push({
-            submission_id: subData.id,
-            question_number: qn,
-            question_key: qkey,
-            type: 'text',
-            size_bytes: 0,
-            storage_path: `inline://q${qn}.txt`,
-            mime_type: 'text/plain',
-            text_content: '',
-          });
-        }
-      });
-
+      // 3) Insert all answers in a single batch
       console.log(`[syncOutbox] Inserting ${answers.length} answers for submission ID: ${subData.id}`);
-      const answersResponse = await fetch(`${API_URL}/answers`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(answers),
-      });
-
-      if (!answersResponse.ok) {
-        throw new Error('Failed to insert answers');
+      if (answers.length > 0) {
+        const answersResponse = await fetch(`${API_URL}/answers`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(answers),
+        });
+        if (!answersResponse.ok) {
+          throw new Error(`Failed to insert answers: ${await answersResponse.text()}`);
+        }
       }
-      console.log(`[syncOutbox] Answers inserted successfully.`);
 
-      // 3) Mark as synced in a separate write
+      // 4) Mark as synced
       console.log(`[syncOutbox] Marking item ID ${item.id} as synced.`);
       await db.put('outbox', { ...item, synced: true, syncedAt: Date.now() });
       console.log(`[syncOutbox] Item ID ${item.id} successfully synced.`);

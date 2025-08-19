@@ -28,11 +28,15 @@ if (!fs.existsSync(uploadsDir)) {
 // Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadsDir)
+    cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
-  }
+    const { submission_id, question_number, question_key } = req.body;
+    const uniqueSuffix = Date.now();
+    const originalExt = path.extname(file.originalname) || '.wav';
+    const filename = `${submission_id}_${question_number}_${question_key}_${uniqueSuffix}${originalExt}`;
+    cb(null, filename);
+  },
 });
 const upload = multer({ storage: storage });
 
@@ -85,11 +89,11 @@ app.post('/answers', (req, res) => {
 });
 
 // Endpoint for file uploads
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/upload', upload.single('audio'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('No file uploaded.');
   }
-  res.status(201).send({ path: req.file.path });
+  res.status(201).send({ path: req.file.filename });
 });
 
 // Endpoint for submit_survey RPC
