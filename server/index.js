@@ -8,8 +8,9 @@ const app = express();
 const port = 3001;
 
 const corsOptions = {
-  origin: '*', // Allow all origins
+  origin: true, // Reflect the request origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Allow cookies to be sent
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
