@@ -89,11 +89,15 @@ app.post('/answers', (req, res) => {
 });
 
 // Endpoint for file uploads
-app.post('/upload', upload.single('audio'), (req, res) => {
-  if (!req.file) {
+app.post('/upload', upload.any(), (req, res) => {
+  const file = req.files && req.files.length > 0 ? req.files[0] : null;
+  if (!file) {
     return res.status(400).send('No file uploaded.');
   }
-  res.status(201).send({ path: req.file.filename });
+  // The other fields are in req.body
+  console.log('File uploaded:', file);
+  console.log('Body:', req.body);
+  res.status(201).send({ path: file.filename });
 });
 
 // Endpoint for submit_survey RPC
