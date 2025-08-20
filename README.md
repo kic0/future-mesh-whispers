@@ -2,10 +2,6 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/0076c01a-5f8b-42aa-b171-0268b92b3c41
-
-**Use your preferred IDE**
-
 If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
@@ -50,7 +46,7 @@ This project now uses a local MySQL database. To set up the database, follow the
 
     Using the command-line client:
     ```sh
-    mysql -u <your_username> -p < survey_db < server/database.sql
+    mysql -u <your_username> -p < server/database.sql
     ```
     You will be prompted to enter your MySQL password.
 
@@ -61,6 +57,43 @@ This project now uses a local MySQL database. To set up the database, follow the
     *   **Database:** `survey_db`
 
     If your MySQL setup uses different credentials, you will need to update the `server/db.js` file.
+
+
+## Backend Server Setup
+
+To run the backend server, follow these steps:
+
+1.  **Navigate to the server directory:**
+    ```sh
+    cd server
+    ```
+
+2.  **Install server dependencies:**
+    ```sh
+    npm install
+    ```
+
+3.  **Install PM2:** This project uses `pm2` to manage the server process and ensure it restarts automatically.
+
+    The server includes `pm2` as a local dependency, which should be sufficient for most environments. However, if you encounter a `pm2: not found` error when running the start script, you may need to install it globally:
+    ```sh
+    sudo npm install -g pm2
+    ```
+
+4.  **Run the server:**
+    *   To start the server in the background using `pm2`:
+        ```sh
+        npm start
+        ```
+    *   To run the server in development mode with auto-reloading (using `nodemon`):
+        ```sh
+        npm run dev
+        ```
+
+5.  **Managing the Server Process:**
+    Once started with `npm start`, you can manage the server process with the following commands:
+    *   `npm stop`: Stops the server process.
+    *   `npm restart`: Restarts the server process.
 
 
 ## What technologies are used for this project?
