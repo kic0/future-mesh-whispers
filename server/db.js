@@ -1,14 +1,22 @@
 const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
+// Using a connection pool is a best practice for handling transient connection errors
+// and managing connections efficiently. The pool will automatically handle disconnections
+// and re-connections.
+const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'survey_db'
+  database: 'survey_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-// The connection is automatically established when the first query is made.
-// No need for an explicit connection.connect() call, which can crash the server
-// on a bad configuration. The error will be caught by the query callback instead.
+// The pool will emit an 'error' event for any fatal errors, but for transient errors
+// like disconnection, it will attempt to reconnect automatically. We can still log these.
+pool.on('error', (err) => {
+  console.error('MySQL Pool Error:', err);
+});
 
-module.exports = connection;
+module.exports = pool;
