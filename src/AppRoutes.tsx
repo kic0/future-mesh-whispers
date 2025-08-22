@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, useParams, Navigate } from 'react-router-dom';
 
 import Index from './pages/Index';
@@ -19,10 +19,20 @@ const QRoute = () => {
   return <Question id={num as 1 | 2 | 3} />;
 };
 
+const StationWrapper = ({ stationId }: { stationId: string }) => {
+  useEffect(() => {
+    localStorage.setItem('station_id', stationId);
+  }, [stationId]);
+  return <Index />;
+};
+
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      <Route path="/" element={<StationWrapper stationId="WEB" />} />
+      <Route path="/totem-1" element={<StationWrapper stationId="TOTEM-1" />} />
+      <Route path="/totem-2" element={<StationWrapper stationId="TOTEM-2" />} />
+      <Route path="/totem-3" element={<StationWrapper stationId="TOTEM-3" />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/demographics" element={<Demographics />} />
       <Route path="/demographics/genero" element={<DemographicsGender />} />
