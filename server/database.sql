@@ -20,10 +20,10 @@ CREATE TABLE `stations` (
 
 -- Seed data for stations
 INSERT IGNORE INTO `stations` (`id`, `label`, `active`) VALUES
-  ('plataforma', 'Plataforma', true),
-  ('mercado', 'Mercado', true),
-  ('vila_flor', 'Vila Flor', true),
-  ('TOTEM-1', 'Test Totem 1', true);
+  ('TOTEM-1', 'Plataforma', true),
+  ('TOTEM-2', 'Mercado', true),
+  ('TOTEM-3', 'VilaFlor', true),
+  ('WEB', 'Web', true);
 
 -- =========================
 -- Submissões (demografia + consentimento)

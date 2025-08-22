@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, useParams, Navigate } from 'react-router-dom';
 
+import StationWrapper from './components/StationWrapper';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
 import Terms from './pages/Terms';
@@ -22,7 +23,10 @@ const QRoute = () => {
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      <Route path="/" element={<StationWrapper stationId="WEB"><Index /></StationWrapper>} />
+      <Route path="/totem-1" element={<StationWrapper stationId="TOTEM-1"><Index /></StationWrapper>} />
+      <Route path="/totem-2" element={<StationWrapper stationId="TOTEM-2"><Index /></StationWrapper>} />
+      <Route path="/totem-3" element={<StationWrapper stationId="TOTEM-3"><Index /></StationWrapper>} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/demographics" element={<Demographics />} />
       <Route path="/demographics/genero" element={<DemographicsGender />} />

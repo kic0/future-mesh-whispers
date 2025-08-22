@@ -75,7 +75,7 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
   const submit = async () => {
     const data: SurveyData = {
       timestamp: new Date().toISOString(),
-      station_id: localStorage.getItem('station_id') || 'TOTEM-1',
+      station_id: localStorage.getItem('station_id') || 'WEB',
       demographics,
       responses,
     };
