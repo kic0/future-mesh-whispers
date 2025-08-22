@@ -6,9 +6,14 @@ import { Link } from "react-router-dom";
 
 const ThankYou = () => {
   const [count, setCount] = useState<number>(0);
-  
+  const [startPath, setStartPath] = useState<string>("/");
+
   useEffect(() => {
     getTodayCount().then(setCount);
+    const storedPath = sessionStorage.getItem("station_start_path");
+    if (storedPath) {
+      setStartPath(storedPath);
+    }
   }, []);
 
   return (
@@ -18,7 +23,7 @@ const ThankYou = () => {
         <p className="text-base md:text-lg text-muted-foreground">A sua participação foi registrada.</p>
         <p className="text-sm md:text-base">Participante nº {count} do dia</p>
         <Button variant="hero" size="lg" asChild className="w-full md:w-auto">
-          <Link to="/">NOVA PARTICIPAÇÃO</Link>
+          <Link to={startPath}>NOVA PARTICIPAÇÃO</Link>
         </Button>
       </main>
     </div>
