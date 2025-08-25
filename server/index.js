@@ -31,10 +31,10 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
-    const { submission_id, question_number, question_key } = req.body;
+    const { submission_id, question_id } = req.body;
     const uniqueSuffix = Date.now();
     const originalExt = path.extname(file.originalname) || '.wav';
-    const filename = `${submission_id}_${question_number}_${question_key}_${uniqueSuffix}${originalExt}`;
+    const filename = `${submission_id}_${question_id}_${uniqueSuffix}${originalExt}`;
     cb(null, filename);
   },
 });
@@ -42,6 +42,16 @@ const upload = multer({ storage: storage });
 
 app.get('/', (req, res) => {
   res.send('Hello from the server!');
+});
+
+// Endpoint to get all questions
+app.get('/questions', (req, res) => {
+  db.query('SELECT * FROM questions ORDER BY id', (err, results) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json(results);
+  });
 });
 
 // Endpoint to create a submission
@@ -65,11 +75,10 @@ app.post('/answers', (req, res) => {
     return res.status(400).send('Expected an array of answers.');
   }
 
-  const sql = 'INSERT INTO answers (submission_id, question_number, question_key, type, storage_path, mime_type, size_bytes, duration_seconds, text_content, created_at) VALUES ?';
+  const sql = 'INSERT INTO answers (submission_id, question_id, type, storage_path, mime_type, size_bytes, duration_seconds, text_content, created_at) VALUES ?';
   const values = answers.map(answer => [
     answer.submission_id,
-    answer.question_number,
-    answer.question_key,
+    answer.question_id,
     answer.type,
     answer.storage_path,
     answer.mime_type,

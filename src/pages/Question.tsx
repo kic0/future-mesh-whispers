@@ -4,47 +4,80 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AudioRecorder } from "@/components/AudioRecorder";
 import { useSurvey } from "@/context/SurveyContext";
 import { useNavigate } from "react-router-dom";
-import { PenTool, Mic2, ArrowLeft, ArrowRight, MessageCircle, Wand2, Heart } from "lucide-react";
-import { useState } from "react";
+import { PenTool, Mic2, ArrowLeft, ArrowRight, MessageCircle, Wand2, Heart, LucideProps } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const prompts = {
-  1: {
-    key: 'future_vision' as const,
-    title: 'Como imagina a cidade daqui a 30 anos?',
-    icon: MessageCircle,
-  },
-  2: {
-    key: 'magic_wand' as const,
-    title: 'Se tivesse uma varinha mágica, o que mudaria neste espaço?',
-    icon: Wand2,
-  },
-  3: {
-    key: 'what_is_missing' as const,
-    title: 'O que desapareceu aqui que faz muita falta?',
-    icon: Heart,
-  },
+const iconMap: { [key: string]: React.FC<LucideProps> } = {
+  MessageCircle,
+  Wand2,
+  Heart,
 };
 
-const Question = ({ id }: { id: 1 | 2 | 3 }) => {
+const Question = ({ questionNumber }: { questionNumber: number }) => {
   const navigate = useNavigate();
-  const { responses, updateResponse } = useSurvey();
-  const { key, title, icon: Icon } = prompts[id];
+  const { responses, updateResponse, questions, loading } = useSurvey();
 
-  const current = responses[key];
-  const [mode, setMode] = useState<'text' | 'audio' | null>(current?.audio ? 'audio' : current?.text ? 'text' : null);
+  const question = useMemo(() => questions[questionNumber - 1], [questions, questionNumber]);
+
+  const current = question ? responses[question.key] : undefined;
+  const [mode, setMode] = useState<'text' | 'audio' | null>(null);
+
+  useState(() => {
+    if (current?.audio) setMode('audio');
+    else if (current?.text) setMode('text');
+    else setMode(null);
+  }, [current]);
+
   const isAnswered = !!(current?.text || current?.audio);
 
   const next = async () => {
-    if (id < 3) navigate(`/q/${id + 1}`);
-    else {
+    if (questionNumber < questions.length) {
+      navigate(`/q/${questionNumber + 1}`);
+    } else {
       navigate('/review');
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 md:px-6">
+        <main className="container max-w-3xl">
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col items-center space-y-4">
+                <Skeleton className="w-12 h-12 rounded-full" />
+                <Skeleton className="h-8 w-3/4" />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Skeleton className="h-12 w-full sm:w-32" />
+                <Skeleton className="h-12 w-full sm:w-32" />
+              </div>
+              <Skeleton className="min-h-40 w-full" />
+              <div className="flex flex-col sm:flex-row justify-between gap-3">
+                <Skeleton className="h-10 w-full sm:w-24" />
+                <Skeleton className="h-10 w-full sm:w-24" />
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
+  if (!question) {
+    return <div>Question not found</div>;
+  }
+
+  const { key, title, icon } = question;
+  const Icon = iconMap[icon] || MessageCircle;
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 md:px-6">
       <main className="container max-w-3xl">
-        <Card key={id}>
+        <Card key={question.id}>
           <CardHeader>
             <div className="flex flex-col items-center space-y-4">
               <Icon className="w-12 h-12 text-primary" />
@@ -80,12 +113,12 @@ const Question = ({ id }: { id: 1 | 2 | 3 }) => {
               />
             )}
             <div className="flex flex-col sm:flex-row justify-between gap-3">
-              <Button variant="outline" onClick={() => navigate(id === 1 ? '/demographics/residente' : `/q/${id - 1}`)} className="w-full sm:w-auto">
+              <Button variant="outline" onClick={() => navigate(questionNumber === 1 ? '/demographics/residente' : `/q/${questionNumber - 1}`)} className="w-full sm:w-auto">
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Voltar
               </Button>
               <Button variant="default" onClick={next} disabled={!isAnswered} className="w-full sm:w-auto">
-                {id < 3 ? 'Próxima' : 'Revisar'}
+                {questionNumber < questions.length ? 'Próxima' : 'Revisar'}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>

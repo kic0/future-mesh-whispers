@@ -5,6 +5,7 @@ USE survey_db;
 -- Drop tables if they exist to start fresh
 DROP TABLE IF EXISTS `answers`;
 DROP TABLE IF EXISTS `submissions`;
+DROP TABLE IF EXISTS `questions`;
 DROP TABLE IF EXISTS `stations`;
 
 -- =========================
@@ -24,6 +25,25 @@ INSERT IGNORE INTO `stations` (`id`, `label`, `active`) VALUES
   ('TOTEM-2', 'Mercado', true),
   ('TOTEM-3', 'VilaFlor', true),
   ('WEB', 'Web', true);
+
+-- =========================
+-- Tabela de perguntas
+-- =========================
+CREATE TABLE `questions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `key` varchar(255) NOT NULL,
+  `title` text NOT NULL,
+  `icon` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key` (`key`)
+);
+
+-- Seed data for questions
+INSERT INTO `questions` (`id`, `key`, `title`, `icon`) VALUES
+(1, 'future_vision', 'Como imagina a cidade daqui a 30 anos?', 'MessageCircle'),
+(2, 'magic_wand', 'Se tivesse uma varinha mágica, o que mudaria neste espaço?', 'Wand2'),
+(3, 'what_is_missing', 'O que desapareceu aqui que faz muita falta?', 'Heart');
 
 -- =========================
 -- Submissões (demografia + consentimento)
@@ -51,8 +71,7 @@ CREATE TABLE `submissions` (
 CREATE TABLE `answers` (
   `id` int NOT NULL AUTO_INCREMENT,
   `submission_id` int NOT NULL,
-  `question_number` smallint NOT NULL CHECK (`question_number` in (1,2,3)),
-  `question_key` enum('future_vision','magic_wand','what_is_missing') NOT NULL,
+  `question_id` int NOT NULL,
   `type` enum('audio','text') NOT NULL,
   `storage_path` text NOT NULL,
   `mime_type` text,
@@ -62,7 +81,8 @@ CREATE TABLE `answers` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   CONSTRAINT `answers_submission_id_fkey` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `submission_question_type_unique` UNIQUE (`submission_id`, `question_number`, `type`)
+  CONSTRAINT `answers_question_id_fkey` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `submission_question_type_unique` UNIQUE (`submission_id`, `question_id`, `type`)
 );
 
 -- =========================
@@ -70,4 +90,4 @@ CREATE TABLE `answers` (
 -- =========================
 CREATE INDEX `idx_submissions_station_created` ON `submissions` (`station_id`, `created_at` DESC);
 CREATE INDEX `idx_answers_submission` ON `answers` (`submission_id`);
-CREATE INDEX `idx_answers_question` ON `answers` (`question_number`, `type`);
+CREATE INDEX `idx_answers_question` ON `answers` (`question_id`, `type`);

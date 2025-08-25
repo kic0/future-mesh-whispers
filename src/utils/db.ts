@@ -1,4 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import { Question, SurveyData } from '@/context/SurveyContext';
 
 const API_URL = `${window.location.protocol}//${window.location.hostname}:3001`;
 
@@ -6,7 +7,7 @@ interface FERDB extends DBSchema {
   submissions: { key: number; value: any };
   outbox: { key: number; value: any };
   meta: { key: string; value: any };
-  files: { key: string; value: { name: string; data: string; mime: string; type: 'text' | 'audio'; question?: number; createdAt: number } };
+  files: { key: string; value: { name: string; data: string; mime: string; type: 'text' | 'audio'; question_id?: number; createdAt: number } };
 }
 
 let dbPromise: Promise<IDBPDatabase<FERDB>> | null = null;
@@ -29,30 +30,25 @@ function getDB() {
   return dbPromise;
 }
 
-export async function addSubmission(data: any) {
+export async function addSubmission(data: SurveyData) {
   const db = await getDB();
 
   const tsSafe = (data.timestamp || new Date().toISOString()).replace(/[:.]/g, '-');
   const base = `${data.station_id || 'TOTEM-1'}_${tsSafe}`;
 
-  const items: Array<{ name: string; data: string; mime: string; type: 'text' | 'audio'; question: number }> = [];
-  const map: Array<{ key: keyof typeof data.responses; q: number }> = [
-    { key: 'future_vision', q: 1 },
-    { key: 'magic_wand', q: 2 },
-    { key: 'what_is_missing', q: 3 },
-  ];
+  const items: Array<{ name: string; data: string; mime: string; type: 'text' | 'audio'; question_id: number }> = [];
 
-  for (const { key, q } of map) {
-    const resp = data.responses?.[key];
+  for (const q of data.questions) {
+    const resp = data.responses?.[q.key];
     if (!resp) continue;
     if (resp.text) {
-      const name = `${base}_q${q}_text.txt`;
+      const name = `${base}_q${q.id}_text.txt`;
       const dataUrl = `data:text/plain;charset=utf-8;base64,${btoa(unescape(encodeURIComponent(resp.text)))}`;
-      items.push({ name, data: dataUrl, mime: 'text/plain', type: 'text', question: q });
+      items.push({ name, data: dataUrl, mime: 'text/plain', type: 'text', question_id: q.id });
     }
     if (resp.audio) {
-      const name = `${base}_q${q}_audio.webm`;
-      items.push({ name, data: resp.audio, mime: 'audio/webm', type: 'audio', question: q });
+      const name = `${base}_q${q.id}_audio.webm`;
+      items.push({ name, data: resp.audio, mime: 'audio/webm', type: 'audio', question_id: q.id });
     }
   }
 
@@ -94,7 +90,11 @@ export async function resetCountsIfNewDay() {
   return;
 }
 
-export async function syncOutbox() {
+export async function syncOutbox(questions: Question[]) {
+  if (!questions || questions.length === 0) {
+    console.log('[syncOutbox] No questions available. Sync aborted.');
+    return;
+  }
   console.log('[syncOutbox] Attempting to sync...');
   if (!navigator.onLine) {
     console.log('[syncOutbox] Offline. Sync aborted.');
@@ -110,12 +110,6 @@ export async function syncOutbox() {
   if (unsynced.length === 0) {
     return;
   }
-
-  const qKeyMap: Record<number, 'future_vision' | 'magic_wand' | 'what_is_missing'> = {
-    1: 'future_vision',
-    2: 'magic_wand',
-    3: 'what_is_missing',
-  };
 
   for (const item of unsynced) {
     console.log(`[syncOutbox] Processing item ID: ${item.id}`);
@@ -144,13 +138,11 @@ export async function syncOutbox() {
 
       // 2) Prepare and upload answers
       const answers: any[] = [];
-      const attachments: Array<{ name: string; data: string; mime: string; type: 'text' | 'audio'; question: number }> = p.attachments || [];
+      const attachments: Array<{ name: string; data: string; mime: string; type: 'text' | 'audio'; question_id: number }> = p.attachments || [];
       console.log(`[syncOutbox] Processing ${attachments.length} attachments for submission ID: ${subData.id}`);
 
       for (const att of attachments) {
-        const qn = att.question;
-        const qkey = qKeyMap[qn as 1 | 2 | 3];
-        if (!qkey) continue;
+        const qid = att.question_id;
 
         if (att.type === 'text') {
           let text = '';
@@ -160,10 +152,9 @@ export async function syncOutbox() {
           } catch {}
           answers.push({
             submission_id: subData.id,
-            question_number: qn,
-            question_key: qkey,
+            question_id: qid,
             type: 'text',
-            storage_path: `inline://q${qn}.txt`,
+            storage_path: `inline://q${qid}.txt`,
             text_content: text,
           });
         } else if (att.type === 'audio') {
@@ -173,8 +164,7 @@ export async function syncOutbox() {
 
           const formData = new FormData();
           formData.append('submission_id', subData.id.toString());
-          formData.append('question_number', qn.toString());
-          formData.append('question_key', qkey);
+          formData.append('question_id', qid.toString());
           formData.append('mime_type', att.mime || 'audio/webm');
           formData.append('size_bytes', binary.byteLength.toString());
           formData.append('audio', blob, att.name);
@@ -185,13 +175,12 @@ export async function syncOutbox() {
           });
 
           if (!uploadResponse.ok) {
-            throw new Error(`Audio upload failed for q${qn}: ${await uploadResponse.text()}`);
+            throw new Error(`Audio upload failed for q${qid}: ${await uploadResponse.text()}`);
           }
           const { path } = await uploadResponse.json();
           answers.push({
             submission_id: subData.id,
-            question_number: qn,
-            question_key: qkey,
+            question_id: qid,
             type: 'audio',
             storage_path: path,
             mime_type: att.mime || 'audio/webm',

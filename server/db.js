@@ -4,10 +4,10 @@ const mysql = require('mysql2');
 // and managing connections efficiently. The pool will automatically handle disconnections
 // and re-connections.
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'survey_db',
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'survey_db',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

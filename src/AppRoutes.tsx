@@ -12,12 +12,22 @@ import DemographicsResident from './pages/DemographicsResident';
 import Question from './pages/Question';
 import Review from './pages/Review';
 import ThankYou from './pages/ThankYou';
+import { useSurvey } from './context/SurveyContext';
 
 const QRoute = () => {
   const { id } = useParams();
+  const { questions, loading } = useSurvey();
   const num = Number(id);
-  if (![1, 2, 3].includes(num)) return <Navigate to="/q/1" replace />;
-  return <Question id={num as 1 | 2 | 3} />;
+
+  if (loading) {
+    return null; // Or a loading spinner
+  }
+
+  if (isNaN(num) || num < 1 || num > questions.length) {
+    return <Navigate to="/q/1" replace />;
+  }
+
+  return <Question questionNumber={num} />;
 };
 
 const AppRoutes = () => {
