@@ -33,7 +33,9 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ onAudioReady, maxD
   useEffect(() => {
     return () => {
       if (timerRef.current) window.clearInterval(timerRef.current);
-      audioCtxRef.current?.close();
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+        audioCtxRef.current.close();
+      }
     };
   }, []);
 
@@ -110,7 +112,9 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ onAudioReady, maxD
         reader.readAsDataURL(blob);
         // cleanup
         stream.getTracks().forEach((t) => t.stop());
-        audioCtxRef.current?.close();
+        if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+          audioCtxRef.current.close();
+        }
       };
 
       startVisualization(stream);
