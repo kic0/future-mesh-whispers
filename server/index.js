@@ -31,11 +31,7 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
-    const { submission_id, question_id } = req.body;
-    const uniqueSuffix = Date.now();
-    const originalExt = path.extname(file.originalname) || '.wav';
-    const filename = `${submission_id}_${question_id}_${uniqueSuffix}${originalExt}`;
-    cb(null, filename);
+    cb(null, file.originalname);
   },
 });
 const upload = multer({ storage: storage });
