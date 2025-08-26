@@ -31,7 +31,11 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    const { submission_id, question_id } = req.body;
+    const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\./g, '-');
+    const originalExt = path.extname(file.originalname) || '.webm';
+    const filename = `${submission_id}_${question_id}_${timestamp}${originalExt}`;
+    cb(null, filename);
   },
 });
 const upload = multer({ storage: storage });
