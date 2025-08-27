@@ -131,7 +131,13 @@ export async function syncOutbox(questions: Question[]) {
       console.log(`[syncOutbox] Processing ${attachments.length} attachments for submission ID: ${subData.id}`);
 
       for (const att of attachments) {
-        const qid = att.question_id || (att as any).question;
+        let qid = att.question_id || (att as any).question;
+        if (!qid) {
+          const match = att.name.match(/q(\d+)/);
+          if (match) {
+            qid = parseInt(match[1], 10);
+          }
+        }
 
         if (att.type === 'text') {
           let text = '';
