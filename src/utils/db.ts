@@ -102,6 +102,7 @@ export async function syncOutbox(questions: Question[]) {
 
   for (const item of unsynced) {
     console.log(`[syncOutbox] Processing item ID: ${item.id}`);
+    console.log('[syncOutbox] Processing item from outbox:', JSON.stringify(item, null, 2));
     try {
       const p = item.payload || {};
 
@@ -131,13 +132,7 @@ export async function syncOutbox(questions: Question[]) {
       console.log(`[syncOutbox] Processing ${attachments.length} attachments for submission ID: ${subData.id}`);
 
       for (const att of attachments) {
-        let qid = att.question_id || (att as any).question;
-        if (!qid) {
-          const match = att.name.match(/q(\d+)/);
-          if (match) {
-            qid = parseInt(match[1], 10);
-          }
-        }
+        const qid = att.question_id || (att as any).question;
 
         if (att.type === 'text') {
           let text = '';
