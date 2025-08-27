@@ -12,6 +12,7 @@ import DemographicsResident from './pages/DemographicsResident';
 import Question from './pages/Question';
 import Review from './pages/Review';
 import ThankYou from './pages/ThankYou';
+import Stats from './pages/Stats';
 import { useSurvey } from './context/SurveyContext';
 
 const QRoute = () => {
@@ -45,6 +46,7 @@ const AppRoutes = () => {
       <Route path="/q/:id" element={<QRoute />} />
       <Route path="/review" element={<Review />} />
       <Route path="/thank-you" element={<ThankYou />} />
+      <Route path="/stats" element={<Stats />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

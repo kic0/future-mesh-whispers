@@ -177,12 +177,12 @@ async function updateStats() {
     'answers_by_station': 'SELECT s.station_id, COUNT(a.id) as total FROM answers a JOIN submissions s ON a.submission_id = s.id GROUP BY s.station_id',
     'answers_by_type': 'SELECT type, COUNT(*) as total FROM answers GROUP BY type',
     'answers_by_type_by_station': 'SELECT s.station_id, a.type, COUNT(a.id) as total FROM answers a JOIN submissions s ON a.submission_id = s.id GROUP BY s.station_id, a.type',
-    'most_common_age_range': 'SELECT age, COUNT(*) as total FROM submissions WHERE age IS NOT NULL GROUP BY age ORDER BY total DESC LIMIT 1',
-    'most_common_age_range_by_station': 'SELECT station_id, age, COUNT(*) as total FROM submissions WHERE age IS NOT NULL GROUP BY station_id, age ORDER BY total DESC',
-    'most_common_gender': 'SELECT gender, COUNT(*) as total FROM submissions WHERE gender IS NOT NULL GROUP BY gender ORDER BY total DESC LIMIT 1',
-    'most_common_gender_by_station': 'SELECT station_id, gender, COUNT(*) as total FROM submissions WHERE gender IS NOT NULL GROUP BY station_id, gender ORDER BY total DESC',
-    'resident_count': 'SELECT resident, COUNT(*) as total FROM submissions WHERE resident IS NOT NULL GROUP BY resident',
-    'resident_count_by_station': 'SELECT station_id, resident, COUNT(*) as total FROM submissions WHERE resident IS NOT NULL GROUP BY station_id, resident'
+    'age_distribution': 'SELECT age, COUNT(*) as total FROM submissions WHERE age IS NOT NULL GROUP BY age ORDER BY age',
+    'age_distribution_by_station': 'SELECT station_id, age, COUNT(*) as total FROM submissions WHERE age IS NOT NULL GROUP BY station_id, age ORDER BY station_id, age',
+    'gender_distribution': 'SELECT gender, COUNT(*) as total FROM submissions WHERE gender IS NOT NULL GROUP BY gender ORDER BY gender',
+    'gender_distribution_by_station': 'SELECT station_id, gender, COUNT(*) as total FROM submissions WHERE gender IS NOT NULL GROUP BY station_id, gender ORDER BY station_id, gender',
+    'resident_distribution': 'SELECT resident, COUNT(*) as total FROM submissions WHERE resident IS NOT NULL GROUP BY resident',
+    'resident_distribution_by_station': 'SELECT station_id, resident, COUNT(*) as total FROM submissions WHERE resident IS NOT NULL GROUP BY station_id, resident'
   };
 
   for (const key in queries) {
