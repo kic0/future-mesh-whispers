@@ -61,33 +61,22 @@ export async function addSubmission(data: SurveyData) {
 
   const id = await db.add('submissions', { ...data, attachments: items.map(({ data: _d, ...rest }) => rest), savedAt: new Date().toISOString() });
   await db.add('outbox', { submissionId: id, payload: { ...data, attachments: items }, synced: false, createdAt: Date.now() });
-  await incrementTodayCount();
   return id;
 }
 
-function todayKey() {
-  const d = new Date();
-  const ymd = d.toISOString().slice(0, 10);
-  return `count:${ymd}`;
-}
-
 export async function getTodayCount(): Promise<number> {
-  const db = await getDB();
-  const key = todayKey();
-  const val = await db.get('meta', key);
-  return typeof val === 'number' ? val : 0;
-}
-
-export async function incrementTodayCount() {
-  const db = await getDB();
-  const key = todayKey();
-  const current = (await db.get('meta', key)) ?? 0;
-  await db.put('meta', current + 1, key);
-}
-
-export async function resetCountsIfNewDay() {
-  // No-op because we namespace by day via key
-  return;
+  try {
+    const response = await fetch(`${API_URL}/submissions/count/today`);
+    if (!response.ok) {
+      console.error('Failed to fetch today count');
+      return 0;
+    }
+    const data = await response.json();
+    return data.count;
+  } catch (error) {
+    console.error('Error fetching today count:', error);
+    return 0;
+  }
 }
 
 export async function syncOutbox(questions: Question[]) {

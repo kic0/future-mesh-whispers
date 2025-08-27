@@ -54,6 +54,24 @@ app.get('/questions', (req, res) => {
   });
 });
 
+// Endpoint to get today's submission count
+app.get('/submissions/count/today', (req, res) => {
+  const sql = `
+    SELECT COUNT(id) as count
+    FROM submissions
+    WHERE DATE(created_at) = CURDATE()
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send(err);
+    }
+    const count = results[0].count || 0;
+    res.json({ count });
+  });
+});
+
 // Endpoint to create a submission
 app.post('/submissions', (req, res) => {
   const { station_id, timestamp, gender, age, resident, consent_given, consent_version, consent_purpose } = req.body;
@@ -120,7 +138,82 @@ app.post('/rpc/submit_survey', (req, res) => {
             return res.status(500).send(err);
         }
         res.status(200).send(result.insertId.toString());
+        // Update stats asynchronously
+        updateStats().catch(console.error);
     });
+});
+
+async function updateStats() {
+  console.log('Updating stats...');
+  // 1. Daily submission counts
+  const dailyCountsSql = `
+    SELECT DATE(created_at) as stat_date, station_id, COUNT(id) as submission_count
+    FROM submissions
+    GROUP BY stat_date, station_id
+    ORDER BY stat_date, station_id;
+  `;
+  const [dailyCounts] = await db.promise().query(dailyCountsSql);
+
+  const dailyCountsData = {};
+  for (const row of dailyCounts) {
+    const date = row.stat_date.toISOString().slice(0, 10);
+    if (!dailyCountsData[date]) {
+      dailyCountsData[date] = {};
+    }
+    dailyCountsData[date][row.station_id] = row.submission_count;
+  }
+
+  for (const date in dailyCountsData) {
+    const key = `daily_counts_${date}`;
+    const value = JSON.stringify(dailyCountsData[date]);
+    await db.promise().query('INSERT INTO stats (stat_key, stat_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE stat_value = ?', [key, value, value]);
+  }
+
+  // 2. Other stats
+  const queries = {
+    'submissions_total': 'SELECT COUNT(*) as total FROM submissions',
+    'submissions_by_station': 'SELECT station_id, COUNT(*) as total FROM submissions GROUP BY station_id',
+    'answers_total': 'SELECT COUNT(*) as total FROM answers',
+    'answers_by_station': 'SELECT s.station_id, COUNT(a.id) as total FROM answers a JOIN submissions s ON a.submission_id = s.id GROUP BY s.station_id',
+    'answers_by_type': 'SELECT type, COUNT(*) as total FROM answers GROUP BY type',
+    'answers_by_type_by_station': 'SELECT s.station_id, a.type, COUNT(a.id) as total FROM answers a JOIN submissions s ON a.submission_id = s.id GROUP BY s.station_id, a.type',
+    'most_common_age_range': 'SELECT age, COUNT(*) as total FROM submissions WHERE age IS NOT NULL GROUP BY age ORDER BY total DESC LIMIT 1',
+    'most_common_age_range_by_station': 'SELECT station_id, age, COUNT(*) as total FROM submissions WHERE age IS NOT NULL GROUP BY station_id, age ORDER BY total DESC',
+    'most_common_gender': 'SELECT gender, COUNT(*) as total FROM submissions WHERE gender IS NOT NULL GROUP BY gender ORDER BY total DESC LIMIT 1',
+    'most_common_gender_by_station': 'SELECT station_id, gender, COUNT(*) as total FROM submissions WHERE gender IS NOT NULL GROUP BY station_id, gender ORDER BY total DESC',
+    'resident_count': 'SELECT resident, COUNT(*) as total FROM submissions WHERE resident IS NOT NULL GROUP BY resident',
+    'resident_count_by_station': 'SELECT station_id, resident, COUNT(*) as total FROM submissions WHERE resident IS NOT NULL GROUP BY station_id, resident'
+  };
+
+  for (const key in queries) {
+    const [rows] = await db.promise().query(queries[key]);
+    const value = JSON.stringify(rows);
+    await db.promise().query('INSERT INTO stats (stat_key, stat_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE stat_value = ?', [key, value, value]);
+  }
+  console.log('Stats updated successfully');
+}
+
+app.post('/stats/update', async (req, res) => {
+  try {
+    await updateStats();
+    res.status(200).send('Stats updated successfully');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Failed to update stats');
+  }
+});
+
+app.get('/stats', (req, res) => {
+  db.query('SELECT * FROM stats', (err, results) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    const stats = {};
+    for (const row of results) {
+      stats[row.stat_key] = JSON.parse(row.stat_value);
+    }
+    res.json(stats);
+  });
 });
 
 

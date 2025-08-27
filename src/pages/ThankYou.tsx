@@ -9,11 +9,11 @@ const ThankYou = () => {
   const [startPath, setStartPath] = useState<string>("/");
 
   useEffect(() => {
-    getTodayCount().then(setCount);
     const storedPath = sessionStorage.getItem("station_start_path");
     if (storedPath) {
       setStartPath(storedPath);
     }
+    getTodayCount().then(setCount);
   }, []);
 
   return (

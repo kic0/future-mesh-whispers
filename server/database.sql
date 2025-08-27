@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS `answers`;
 DROP TABLE IF EXISTS `submissions`;
 DROP TABLE IF EXISTS `questions`;
 DROP TABLE IF EXISTS `stations`;
+DROP TABLE IF EXISTS `stats`;
 
 -- =========================
 -- Tabela de estações (totens)
@@ -91,3 +92,14 @@ CREATE TABLE `answers` (
 CREATE INDEX `idx_submissions_station_created` ON `submissions` (`station_id`, `created_at` DESC);
 CREATE INDEX `idx_answers_submission` ON `answers` (`submission_id`);
 CREATE INDEX `idx_answers_question` ON `answers` (`question_id`, `type`);
+
+-- =========================
+-- Tabela de estatísticas
+-- =========================
+CREATE TABLE `stats` (
+  `stat_key` varchar(255) NOT NULL,
+  `stat_value` json NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`stat_key`)
+);
