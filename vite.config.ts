@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
     allowedHosts: ['fr.kico.info'],
     hmr: {
       host: 'fr.kico.info',
-      protocol: 'ws',
+      protocol: 'wss',
     }
   },
   plugins: [
