@@ -210,7 +210,7 @@ app.get('/stats', (req, res) => {
     }
     const stats = {};
     for (const row of results) {
-      stats[row.stat_key] = JSON.parse(row.stat_value);
+      stats[row.stat_key] = row.stat_value;
     }
     res.json(stats);
   });
