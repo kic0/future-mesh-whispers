@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 export const ConnectionBadge = () => {
   const [online, setOnline] = useState<boolean>(navigator.onLine);
@@ -16,14 +15,8 @@ export const ConnectionBadge = () => {
   }, []);
 
   return (
-    <div className="fixed top-3 right-3 z-50 flex flex-col items-end">
-      <div className={`px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${online ? 'bg-primary text-primary-foreground border-transparent' : 'bg-destructive text-destructive-foreground'}`} aria-live="polite">
-        {online ? 'Online' : 'Offline'}
-      </div>
-      <div className="flex gap-2 mt-1">
-        <Link to="/" className="text-xs text-foreground hover:underline">Home</Link>
-        <Link to="/stats" className="text-xs text-foreground hover:underline">Stats</Link>
-      </div>
+    <div className={`fixed top-3 right-3 z-50 px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${online ? 'bg-primary text-primary-foreground border-transparent' : 'bg-destructive text-destructive-foreground'}`} aria-live="polite">
+      {online ? 'Online' : 'Offline'}
     </div>
   );
 };
