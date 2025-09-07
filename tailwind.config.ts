@@ -19,6 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
+				display: ["Oxanium", "ui-sans-serif", "system-ui"],
 				sans: ["Roboto", "ui-sans-serif", "system-ui"],
 				mono: ["Azeret Mono", "monospace"],
 			},

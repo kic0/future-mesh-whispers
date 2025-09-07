@@ -62,12 +62,11 @@
 @layer base {
   * { @apply border-border; }
   html { @apply antialiased; }
-  body { @apply bg-background text-foreground font-mono; }
+  body { @apply bg-background text-foreground; }
 
-  h1 { @apply font-mono font-bold tracking-tight; }
+  h1 { @apply font-display font-bold tracking-tight; }
   h2 { @apply font-mono font-medium tracking-tight; }
-  p { @apply font-sans; }
-  input, button, textarea { @apply font-mono; }
+  p, input, button, textarea { @apply font-sans; }
 
   ::selection {
     background: hsl(var(--primary));
