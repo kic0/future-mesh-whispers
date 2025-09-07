@@ -66,7 +66,8 @@
 
   h1 { @apply font-mono font-bold tracking-tight; }
   h2 { @apply font-mono font-medium tracking-tight; }
-  p, input, button, textarea { @apply font-sans; }
+  p { @apply font-sans; }
+  input, button, textarea { @apply font-mono; }
 
   ::selection {
     background: hsl(var(--primary));
