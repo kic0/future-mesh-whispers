@@ -2,11 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { getTodayCount } from "@/utils/db";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ThankYou = () => {
   const [count, setCount] = useState<number>(0);
   const [startPath, setStartPath] = useState<string>("/");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedPath = sessionStorage.getItem("station_start_path");
@@ -15,6 +16,15 @@ const ThankYou = () => {
     }
     getTodayCount().then(setCount);
   }, []);
+
+  useEffect(() => {
+    const storedPath = sessionStorage.getItem("station_start_path") || "/";
+    const timer = setTimeout(() => {
+      navigate(storedPath);
+    }, 10000); // 10-second timeout
+
+    return () => clearTimeout(timer); // Cleanup the timer
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center text-center px-4 md:px-6 pt-44 md:pt-52 lg:pt-56">
