@@ -7,6 +7,7 @@ import { Toaster as Sonner } from '@/components/ui/sonner';
 import AppRoutes from './AppRoutes';
 import { SurveyProvider } from './context/SurveyContext';
 import HeaderLogo from '@/components/HeaderLogo';
+import InactivityTimeoutWrapper from './components/InactivityTimeoutWrapper';
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,9 @@ function App() {
         <Router>
           <HeaderLogo />
           <div className="App">
-            <AppRoutes />
+            <InactivityTimeoutWrapper>
+              <AppRoutes />
+            </InactivityTimeoutWrapper>
           </div>
           <Toaster />
           <Sonner />
