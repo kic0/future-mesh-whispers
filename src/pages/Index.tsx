@@ -7,8 +7,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative">
       <Seo
-        title="Futuro em Rede - Já pensaste como será o futuro em Guimarães?"
-        description="Vamos construir uma visão coletiva para aqui. Participe e compartilhe sua visão para Guimarães."
+        title="Futuro em Rede"
+        description="Vamos construir uma visão coletiva para a cidade."
         canonical="/"
       />
       <ConnectionBadge />
@@ -17,9 +17,9 @@ const Index = () => {
       <main className="container max-w-3xl mx-auto text-left px-4 md:px-6 pt-32 md:pt-40 lg:pt-48">
         <header className="mb-8 md:mb-10 animate-fade-in">
           <h1 className="text-3xl md:text-4xl lg:text-5xl leading-tight font-display text-foreground break-words">
-            Já pensaste como será o futuro em Guimarães?
+            Já imaginaste como será o futuro em Guimarães?
           </h1>
-          <p className="mt-3 md:mt-4 text-base md:text-lg text-muted-foreground">Vamos construir uma visão coletiva para aqui.</p>
+          <p className="mt-3 md:mt-4 text-base md:text-lg text-muted-foreground">Vamos construir uma visão coletiva para a cidade.</p>
         </header>
         <section className="space-y-4 md:space-y-6">
           <div className="flex justify-end">
