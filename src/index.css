@@ -8,7 +8,7 @@
 @layer base {
   :root {
     /* Neutrals */
-    --background: 0 0% 96%; /* #f5f5f5 */
+    --background: 65.5 16.4% 86.9%; /* #e2e3d8 */
     --foreground: 0 0% 10%; /* #1a1a1a */
 
     /* Surfaces */
@@ -24,8 +24,8 @@
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 94%;
     --muted-foreground: 215.4 16.3% 35%;
-    --accent: 96 37% 40%; /* #6b8c42 */
-    --accent-foreground: 0 0% 98%;
+    --accent: 65.5 16.4% 76.9%; /* slightly darker than #e2e3d8 */
+    --accent-foreground: 0 0% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
