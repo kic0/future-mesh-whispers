@@ -18,21 +18,21 @@ const Review = () => {
       <main className="container max-w-3xl">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Revise as suas respostas</CardTitle>
+            <CardTitle className="text-3xl">Revê as tuas respostas</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <section className="space-y-2">
               <h2 className="text-xl">Dados demográficos</h2>
-              <p className="text-muted-foreground">Gênero: {demographics.gender || '—'}</p>
+              <p className="text-muted-foreground">Género: {demographics.gender || '—'}</p>
               <p className="text-muted-foreground">Idade: {demographics.age || '—'}</p>
               <p className="text-muted-foreground">Residente: {demographics.resident === undefined ? '—' : demographics.resident ? 'Sim' : 'Não'}</p>
             </section>
 
             {(() => {
               const items = [
-                { k: 'future_vision' as const, t: 'Como imagina a cidade daqui a 30 anos?', i: 1 },
-                { k: 'magic_wand' as const, t: 'Se tivesse uma varinha mágica, o que mudaria neste espaço?', i: 2 },
-                { k: 'what_is_missing' as const, t: 'O que desapareceu aqui que faz muita falta?', i: 3 },
+                { k: 'future_vision' as const, t: 'Como imaginas a cidade daqui a 30 anos?', i: 1 },
+                { k: 'magic_wand' as const, t: 'Se tivesses uma varinha mágica, o que mudarias em Guimarães?', i: 2 },
+                { k: 'what_is_missing' as const, t: 'O que desapareceu na cidade e faz muita falta?', i: 3 },
               ];
               return items.map(({ k, t, i }) => (
                 <section key={k} className="border rounded-md p-4 bg-card">
