@@ -64,7 +64,7 @@
   html { @apply antialiased; }
   body { @apply bg-background text-foreground font-mono; }
 
-  h1 { @apply font-mono font-bold tracking-tight; }
+  h1 { @apply font-mono font-bold tracking-tight leading-relaxed; }
   h2 { @apply font-mono font-medium tracking-tight; }
   p { @apply font-sans; }
   input, button, textarea { @apply font-mono; }
