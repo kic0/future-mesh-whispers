@@ -36,7 +36,7 @@ const DemographicsAge = () => {
                   key={opt}
                   variant={selected === opt ? 'hero' : 'outline'}
                   size="xl"
-                  className="justify-start h-16"
+                  className="h-16"
                   onClick={() => setSelected(opt)}
                   aria-pressed={selected === opt}
                 >
