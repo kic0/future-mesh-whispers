@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design System — Futuros em Rede
+/* Design System — Futuro em Rede
    All colors are HSL semantic tokens. Fonts are configured in tailwind.config.ts */
 
 @layer base {
