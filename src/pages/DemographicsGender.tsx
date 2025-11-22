@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSurvey } from "@/context/SurveyContext";
 import { useNavigate } from "react-router-dom";
-import { User, UserRound, Users } from "lucide-react";
+import { User } from "lucide-react";
 import { useState } from "react";
 
 const options = ['Masculino','Feminino','Não-binário','Prefiro não responder'] as const;
@@ -36,12 +36,11 @@ const DemographicsGender = () => {
                   key={opt}
                   variant={selected === opt ? 'hero' : 'outline'}
                   size="xl"
-                  className="justify-start h-16"
+                  className="h-16"
                   onClick={() => setSelected(opt)}
                   aria-pressed={selected === opt}
                 >
-                  {opt === 'Masculino' ? <UserRound /> : opt === 'Feminino' ? <Users /> : <User />}
-                  <span className="ml-2">{opt}</span>
+                  <span>{opt}</span>
                 </Button>
               ))}
             </div>

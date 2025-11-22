@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSurvey } from "@/context/SurveyContext";
 import { useNavigate } from "react-router-dom";
-import { Home, MapPin } from "lucide-react";
+import { Home } from "lucide-react";
 import { useState } from "react";
 
 const options = ['Sim','Não'] as const;
@@ -42,7 +42,7 @@ const DemographicsResident = () => {
                   onClick={() => setSelected(opt)}
                   aria-pressed={selected === opt}
                 >
-                  {opt === 'Sim' ? <Home /> : <MapPin />} <span className="ml-2">{opt}</span>
+                  <span>{opt}</span>
                 </Button>
               ))}
             </div>
