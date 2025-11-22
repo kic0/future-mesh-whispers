@@ -18,7 +18,7 @@ const Demographics = () => {
           </CardHeader>
           <CardContent className="space-y-8">
             <section>
-              <h2 className="text-xl mb-3">Gênero</h2>
+              <h2 className="text-xl mb-3">Género</h2>
               <RadioGroup
                 value={demographics.gender}
                 onValueChange={(v) => setDemographics({ ...demographics, gender: v as any })}
@@ -50,7 +50,7 @@ const Demographics = () => {
             </section>
 
             <section>
-              <h2 className="text-xl mb-3">És residente de Guimarães?</h2>
+              <h2 className="text-xl mb-3">És residente em Guimarães?</h2>
               <RadioGroup
                 value={
                   demographics.resident === undefined ? undefined : demographics.resident ? 'Sim' : 'Não'
