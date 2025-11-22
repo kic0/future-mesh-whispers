@@ -28,7 +28,7 @@ const DemographicsResident = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl flex items-center gap-3">
-              <Home className="text-primary" /> És residente de Guimarães?
+              <Home className="text-primary" /> És residente em Guimarães?
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
