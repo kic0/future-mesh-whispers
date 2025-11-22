@@ -86,7 +86,7 @@ const Question = ({ questionNumber }: { questionNumber: number }) => {
           </CardHeader>
           <CardContent className="space-y-6">
             <fieldset>
-              <legend className="sr-only">Escolha o tipo de resposta</legend>
+              <legend className="sr-only">Escolhe como preferes responder.</legend>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button variant={mode === 'text' ? 'default' : 'outline'} size="lg" onClick={() => setMode('text')} disabled={mode === 'audio'} className="w-full sm:w-auto">
                   <PenTool className="w-5 h-5 mr-2" /> Escrever
@@ -99,7 +99,7 @@ const Question = ({ questionNumber }: { questionNumber: number }) => {
 
             {mode === 'text' && (
               <Textarea
-                placeholder="Escreva aqui a sua resposta"
+                placeholder="Escreve aqui a tua resposta"
                 className="min-h-40 bg-card"
                 value={current?.text || ''}
                 onChange={(e) => updateResponse(key, { text: e.target.value })}
@@ -118,7 +118,7 @@ const Question = ({ questionNumber }: { questionNumber: number }) => {
                 Voltar
               </Button>
               <Button variant="default" onClick={next} disabled={!isAnswered} className="w-full sm:w-auto">
-                {questionNumber < questions.length ? 'Próxima' : 'Revisar'}
+                {questionNumber < questions.length ? 'Próxima' : 'Rever'}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
