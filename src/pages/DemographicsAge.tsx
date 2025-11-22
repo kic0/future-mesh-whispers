@@ -26,7 +26,7 @@ const DemographicsAge = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl flex items-center gap-3">
-              <CalendarClock className="text-primary" /> Qual é a sua idade?
+              <CalendarClock className="text-primary" /> Qual é a tua idade?
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
