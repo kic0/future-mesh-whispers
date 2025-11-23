@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ConnectionBadge } from "@/components/ConnectionBadge";
 import { ArrowRight } from "lucide-react";
 import Seo from "@/components/Seo";
 
@@ -11,7 +10,6 @@ const Index = () => {
         description="Vamos construir uma visão coletiva para a cidade."
         canonical="/"
       />
-      <ConnectionBadge />
 
 
       <main className="container max-w-3xl mx-auto text-left px-4 md:px-6 pt-32 md:pt-40 lg:pt-48">

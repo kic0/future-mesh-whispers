@@ -30,7 +30,7 @@ const HeaderLogo = () => {
           className="pointer-events-auto inline-block"
         >
           <img
-            src="/lovable-uploads/be59a410-541d-4f1a-b906-40f6c6ceaf12.png"
+            src="/assets/logo.png"
             alt="Logo Futuro em Rede Guimarães"
             className={`${getLogoSize()} rounded-full object-cover`}
             loading="eager"
