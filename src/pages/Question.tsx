@@ -16,7 +16,7 @@ const iconMap: { [key: string]: React.FC<LucideProps> } = {
 
 const Question = ({ questionNumber }: { questionNumber: number }) => {
   const navigate = useNavigate();
-  const { responses, updateResponse, questions, loading } = useSurvey();
+  const { responses, updateResponse, questions, loading, submit } = useSurvey();
 
   const question = useMemo(() => questions[questionNumber - 1], [questions, questionNumber]);
 
@@ -35,7 +35,8 @@ const Question = ({ questionNumber }: { questionNumber: number }) => {
     if (questionNumber < questions.length) {
       navigate(`/q/${questionNumber + 1}`);
     } else {
-      navigate('/review');
+      await submit();
+      navigate('/thank-you');
     }
   };
 
@@ -118,7 +119,7 @@ const Question = ({ questionNumber }: { questionNumber: number }) => {
                 Voltar
               </Button>
               <Button variant="default" onClick={next} disabled={!isAnswered} className="w-full sm:w-auto">
-                {questionNumber < questions.length ? 'Próxima' : 'Rever'}
+                {questionNumber < questions.length ? 'Próxima' : 'Enviar'}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
