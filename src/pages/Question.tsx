@@ -16,18 +16,24 @@ const iconMap: { [key: string]: React.FC<LucideProps> } = {
 
 const Question = ({ questionNumber }: { questionNumber: number }) => {
   const navigate = useNavigate();
-  const { responses, updateResponse, questions, loading, submit } = useSurvey();
+  const { responses, updateResponse, questions, loading, submit, inputMode, setInputMode } = useSurvey();
 
   const question = useMemo(() => questions[questionNumber - 1], [questions, questionNumber]);
 
   const current = question ? responses[question.key] : undefined;
-  const [mode, setMode] = useState<'text' | 'audio' | null>(null);
+  const [mode, setMode] = useState<'text' | 'audio' | null>(inputMode);
 
-  useState(() => {
+  useEffect(() => {
     if (current?.audio) setMode('audio');
     else if (current?.text) setMode('text');
-    else setMode(null);
-  }, [current]);
+    else setMode(inputMode);
+  }, [current, inputMode]);
+
+  useEffect(() => {
+    if (mode && !inputMode) {
+      setInputMode(mode);
+    }
+  }, [mode, inputMode, setInputMode]);
 
   const isAnswered = !!(current?.text || current?.audio);
 
@@ -86,17 +92,19 @@ const Question = ({ questionNumber }: { questionNumber: number }) => {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            <fieldset>
-              <legend className="sr-only">Escolhe como preferes responder.</legend>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant={mode === 'text' ? 'default' : 'outline'} size="lg" onClick={() => setMode('text')} disabled={mode === 'audio'} className="w-full sm:w-auto">
-                  <PenTool className="w-5 h-5 mr-2" /> Escrever
-                </Button>
-                <Button variant={mode === 'audio' ? 'default' : 'outline'} size="lg" onClick={() => setMode('audio')} disabled={mode === 'text'} className="w-full sm:w-auto">
-                  <Mic2 className="w-5 h-5 mr-2" /> Gravar voz
-                </Button>
-              </div>
-            </fieldset>
+            {!inputMode && (
+              <fieldset>
+                <legend className="sr-only">Escolhe como preferes responder.</legend>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button variant={mode === 'text' ? 'default' : 'outline'} size="lg" onClick={() => setMode('text')} disabled={mode === 'audio'} className="w-full sm:w-auto">
+                    <PenTool className="w-5 h-5 mr-2" /> Escrever
+                  </Button>
+                  <Button variant={mode === 'audio' ? 'default' : 'outline'} size="lg" onClick={() => setMode('audio')} disabled={mode === 'text'} className="w-full sm:w-auto">
+                    <Mic2 className="w-5 h-5 mr-2" /> Gravar voz
+                  </Button>
+                </div>
+              </fieldset>
+            )}
 
             {mode === 'text' && (
               <Textarea

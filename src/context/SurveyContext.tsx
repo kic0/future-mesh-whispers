@@ -36,6 +36,8 @@ interface SurveyContextValue {
   submit: () => Promise<number>;
   questions: Question[];
   loading: boolean;
+  inputMode: 'text' | 'audio' | null;
+  setInputMode: (mode: 'text' | 'audio') => void;
 }
 
 const SurveyContext = createContext<SurveyContextValue | undefined>(undefined);
@@ -45,6 +47,7 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
   const [responses, setResponses] = useState<Record<string, ResponseItem>>({});
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
+  const [inputMode, setInputMode] = useState<'text' | 'audio' | null>(null);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -89,6 +92,7 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
   const reset = () => {
     setDemographics({});
     setResponses({});
+    setInputMode(null);
   };
 
   const submit = async () => {
@@ -107,7 +111,7 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <SurveyContext.Provider value={{ demographics, setDemographics, responses, updateResponse, reset, submit, questions, loading }}>
+    <SurveyContext.Provider value={{ demographics, setDemographics, responses, updateResponse, reset, submit, questions, loading, inputMode, setInputMode }}>
       {children}
     </SurveyContext.Provider>
   );
