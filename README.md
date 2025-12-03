@@ -96,6 +96,36 @@ To run the backend server, follow these steps:
     *   `npm restart`: Restarts the server process.
 
 
+## Admin Panel Setup
+
+This project includes a standalone admin panel for managing survey data. To run the admin panel, follow these steps:
+
+1.  **Navigate to the admin directory:**
+    ```sh
+    cd admin
+    ```
+
+2.  **Install admin dependencies:**
+    ```sh
+    npm install
+    ```
+
+3.  **Configure Authentication:** The admin panel is password-protected using basic authentication. The credentials are set via environment variables.
+
+    Before starting the server, you will need to set the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables. For example:
+    ```sh
+    export ADMIN_USER=admin
+    export ADMIN_PASSWORD=your_secret_password
+    ```
+
+4.  **Run the admin server:**
+    *   To run the admin server in development mode with auto-reloading (using `nodemon`):
+        ```sh
+        npm run dev
+        ```
+    The admin server will run on port `3002` by default.
+
+
 ## What technologies are used for this project?
 
 This project is built with:
