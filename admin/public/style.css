@@ -1,0 +1,46 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+#app {
+  display: flex;
+}
+
+#submissions-list {
+  width: 30%;
+  margin-right: 20px;
+}
+
+#submissions {
+  list-style: none;
+  padding: 0;
+}
+
+#submissions li {
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 5px;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+#submissions li:hover {
+  background-color: #eee;
+}
+
+#submission-details {
+  width: 70%;
+}
+
+#details-content {
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+}
