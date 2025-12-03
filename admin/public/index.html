@@ -8,16 +8,32 @@
 </head>
 <body>
   <h1>Admin Panel</h1>
-  <div id="app">
-    <div id="submissions-list">
-      <h2>Submissions</h2>
-      <ul id="submissions"></ul>
-    </div>
-    <div id="submission-details">
-      <h2>Submission Details</h2>
-      <div id="details-content"></div>
+
+  <div class="tab">
+    <button class="tablinks" data-tab="submissions">Submissions</button>
+    <button class="tablinks" data-tab="grafana">Grafana Metrics</button>
+  </div>
+
+  <div id="submissions-tab" class="tabcontent">
+    <div id="app">
+      <div id="submissions-list">
+        <h2>Submissions</h2>
+        <ul id="submissions"></ul>
+      </div>
+      <div id="submission-details">
+        <h2>Submission Details</h2>
+        <div id="details-content"></div>
+      </div>
     </div>
   </div>
+
+  <div id="grafana-tab" class="tabcontent">
+    <h2>Grafana Metrics</h2>
+    <div id="grafana-placeholder">
+      <p>The Grafana dashboard will be embedded here. Replace this placeholder with the iframe code from your Grafana dashboard's "Share" panel.</p>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,4 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // --- Tab Switching Logic ---
+  const tablinks = document.querySelectorAll('.tablinks');
+  const tabcontents = document.querySelectorAll('.tabcontent');
+
+  const openTab = (evt, tabName) => {
+    tabcontents.forEach(tabcontent => {
+      tabcontent.style.display = 'none';
+    });
+    tablinks.forEach(tablink => {
+      tablink.className = tablink.className.replace(' active', '');
+    });
+    document.getElementById(tabName + '-tab').style.display = 'block';
+    evt.currentTarget.className += ' active';
+  };
+
+  tablinks.forEach(tablink => {
+    tablink.addEventListener('click', (evt) => {
+      openTab(evt, tablink.dataset.tab);
+    });
+  });
+
+  // Set the default open tab
+  const defaultTab = document.querySelector('.tablinks');
+  if (defaultTab) {
+    document.getElementById(defaultTab.dataset.tab + '-tab').style.display = 'block';
+    defaultTab.className += ' active';
+  }
+  // --- End Tab Switching Logic ---
+
   const submissionsList = document.getElementById('submissions');
   const detailsContent = document.getElementById('details-content');
 
@@ -19,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const renderSubmissions = () => {
+    if (!submissionsList) return;
     submissionsList.innerHTML = '';
     submissions.forEach(submission => {
       const li = document.createElement('li');
@@ -32,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const renderSubmissionDetails = async (id) => {
+    if (!detailsContent) return;
     try {
       const response = await fetch(`/api/submissions/${id}`);
       if (!response.ok) {
@@ -218,5 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  fetchSubmissions();
+  if (submissionsList) {
+    fetchSubmissions();
+  }
 });
