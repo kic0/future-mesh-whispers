@@ -46,8 +46,9 @@ app.get('/', (req, res) => {
 
 // Endpoint to get all questions
 app.get('/questions', (req, res) => {
-  db.query('SELECT * FROM questions ORDER BY id', (err, results) => {
+  db.query('SELECT * FROM questions ORDER BY `key`', (err, results) => {
     if (err) {
+      console.error('Error fetching questions:', err);
       return res.status(500).send(err);
     }
     res.json(results);
@@ -206,6 +207,7 @@ app.post('/stats/update', async (req, res) => {
 app.get('/stats', (req, res) => {
   db.query('SELECT * FROM stats', (err, results) => {
     if (err) {
+      console.error('Error fetching stats:', err);
       return res.status(500).send(err);
     }
     const stats = {};
