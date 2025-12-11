@@ -53,7 +53,7 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
     const fetchQuestions = async () => {
       try {
         const API_URL = `${window.location.protocol}//${window.location.hostname}:3001`;
-        const response = await fetch(`${API_URL}/questions`);
+        const response = await fetch(`${API_URL}/questions`, { cache: 'no-cache' });
         const data = await response.json();
         setQuestions(data);
       } catch (error) {
