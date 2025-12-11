@@ -51,6 +51,9 @@ app.get('/questions', (req, res) => {
       console.error('Error fetching questions:', err);
       return res.status(500).send(err);
     }
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     res.json(results);
   });
 });
@@ -214,6 +217,9 @@ app.get('/stats', (req, res) => {
     for (const row of results) {
       stats[row.stat_key] = row.stat_value;
     }
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     res.json(stats);
   });
 });
