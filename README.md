@@ -110,13 +110,21 @@ This project includes a standalone admin panel for managing survey data. To run 
     npm install
     ```
 
-3.  **Configure Authentication:** The admin panel is password-protected using basic authentication. The credentials are set via environment variables.
+3.  **Configuration:** The admin panel requires two sets of environment variables to be set before running.
 
-    Before starting the server, you will need to set the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables. For example:
-    ```sh
-    export ADMIN_USER=admin
-    export ADMIN_PASSWORD=your_secret_password
-    ```
+    *   **Database Credentials:** The admin server is a separate process and needs access to the database.
+        ```sh
+        export DB_HOST=localhost
+        export DB_USER=root
+        export DB_PASSWORD=your_mysql_password
+        export DB_NAME=survey_db
+        ```
+
+    *   **Admin Panel Credentials:** The admin panel is password-protected using basic authentication.
+        ```sh
+        export ADMIN_USER=admin
+        export ADMIN_PASSWORD=your_secret_password
+        ```
 
 4.  **Run the admin server:**
     *   To run the admin server in development mode with auto-reloading (using `nodemon`):

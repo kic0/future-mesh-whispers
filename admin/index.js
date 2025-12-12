@@ -30,6 +30,7 @@ app.get('/', (req, res) => {
 app.get('/api/submissions', (req, res) => {
   db.query('SELECT * FROM submissions ORDER BY created_at DESC', (err, results) => {
     if (err) {
+      console.error('Error fetching submissions for admin panel:', err);
       return res.status(500).send(err);
     }
     res.json(results);
