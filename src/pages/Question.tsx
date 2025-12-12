@@ -5,7 +5,7 @@ import { AudioRecorder } from "@/components/AudioRecorder";
 import { useSurvey } from "@/context/SurveyContext";
 import { useNavigate } from "react-router-dom";
 import { PenTool, Mic2, ArrowLeft, ArrowRight, MessageCircle, Wand2, Heart, LucideProps } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const iconMap: { [key: string]: React.FC<LucideProps> } = {
