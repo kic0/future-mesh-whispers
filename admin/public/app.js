@@ -118,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
           ${answers.map(answer => `
             <li id="answer-${answer.id}">
               <strong>Question:</strong> ${answer.question_title}<br>
-              <strong>Type:</strong> ${answer.type}<br>
               ${answer.type === 'audio' ? `
                 <audio controls src="/api/audio/${answer.storage_path}"></audio><br>
                 <a href="/api/audio/${answer.storage_path}" download>Download</a>
