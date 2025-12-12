@@ -61,6 +61,10 @@ h2 {
   background-color: #eee;
 }
 
+#submissions li.selected {
+  background-color: #9aff6b; /* Primary color */
+}
+
 #submission-details {
   width: 70%;
 }

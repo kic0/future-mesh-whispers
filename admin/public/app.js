@@ -77,6 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
       li.textContent = `Submission #${submission.id} - ${new Date(submission.created_at).toLocaleString()}`;
       li.dataset.id = submission.id;
       li.addEventListener('click', () => {
+        // Remove .selected from all other items
+        document.querySelectorAll('#submissions li').forEach(item => item.classList.remove('selected'));
+        // Add .selected to the clicked item
+        li.classList.add('selected');
         renderSubmissionDetails(submission.id);
       });
       submissionsList.appendChild(li);
