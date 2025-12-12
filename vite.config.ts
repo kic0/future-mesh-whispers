@@ -8,10 +8,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "0.0.0.0",
     port: 8080,
-    allowedHosts: ['fr.kico.info'],
+    allowedHosts: ['app.futuroemrede.com'],
     hmr: {
-      host: 'fr.kico.info',
+      host: 'app.futuroemrede.com',
       protocol: 'wss',
+      clientPort: 443,
     }
   },
   plugins: [
