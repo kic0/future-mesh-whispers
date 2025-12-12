@@ -21,6 +21,16 @@
     <div id="app">
       <div id="submissions-list">
         <h2>Submissions</h2>
+        <div id="filters">
+          <label for="station-filter">Station:</label>
+          <select id="station-filter"></select>
+          <label for="type-filter">Type:</label>
+          <select id="type-filter">
+            <option value="all">All</option>
+            <option value="text">Text</option>
+            <option value="audio">Audio</option>
+          </select>
+        </div>
         <ul id="submissions"></ul>
       </div>
       <div id="submission-details">

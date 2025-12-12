@@ -26,9 +26,41 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Endpoint to get all submissions
+// Endpoint to get all stations
+app.get('/api/stations', (req, res) => {
+  db.query('SELECT id, label FROM stations ORDER BY label', (err, results) => {
+    if (err) {
+      console.error('Error fetching stations:', err);
+      return res.status(500).send(err);
+    }
+    res.json(results);
+  });
+});
+
+// Endpoint to get all submissions with filtering
 app.get('/api/submissions', (req, res) => {
-  db.query('SELECT * FROM submissions ORDER BY created_at DESC', (err, results) => {
+  const { station_id, answer_type } = req.query;
+
+  let sql = 'SELECT DISTINCT s.* FROM submissions s';
+  const params = [];
+
+  if (answer_type && answer_type !== 'all') {
+    sql += ' JOIN answers a ON s.id = a.submission_id WHERE a.type = ?';
+    params.push(answer_type);
+  }
+
+  if (station_id && station_id !== 'all') {
+    if (params.length > 0) {
+      sql += ' AND s.station_id = ?';
+    } else {
+      sql += ' WHERE s.station_id = ?';
+    }
+    params.push(station_id);
+  }
+
+  sql += ' ORDER BY s.created_at DESC';
+
+  db.query(sql, params, (err, results) => {
     if (err) {
       console.error('Error fetching submissions for admin panel:', err);
       return res.status(500).send(err);
@@ -37,18 +69,30 @@ app.get('/api/submissions', (req, res) => {
   });
 });
 
-// Endpoint to get a single submission with its answers
+
+// Endpoint to get a single submission with its answers and question titles
 app.get('/api/submissions/:id', (req, res) => {
   const { id } = req.params;
   const submissionSql = 'SELECT * FROM submissions WHERE id = ?';
-  const answersSql = 'SELECT * FROM answers WHERE submission_id = ?';
+  const answersSql = `
+    SELECT a.*, q.title AS question_title
+    FROM answers a
+    JOIN questions q ON a.question_id = q.id
+    WHERE a.submission_id = ?
+  `;
 
   db.query(submissionSql, [id], (err, submissionResults) => {
-    if (err) return res.status(500).send(err);
+    if (err) {
+      console.error('Error fetching submission:', err);
+      return res.status(500).send(err);
+    }
     if (submissionResults.length === 0) return res.status(404).send('Submission not found');
 
     db.query(answersSql, [id], (err, answersResults) => {
-      if (err) return res.status(500).send(err);
+      if (err) {
+        console.error('Error fetching answers with questions:', err);
+        return res.status(500).send(err);
+      }
       res.json({ submission: submissionResults[0], answers: answersResults });
     });
   });
@@ -62,7 +106,10 @@ app.put('/api/submissions/:id', (req, res) => {
   const params = [station_id, gender, age, resident, id];
 
   db.query(sql, params, (err, result) => {
-    if (err) return res.status(500).send(err);
+    if (err) {
+        console.error('Error updating submission:', err);
+        return res.status(500).send(err);
+    }
     res.json({ message: 'Submission updated successfully' });
   });
 });
@@ -74,10 +121,16 @@ app.delete('/api/submissions/:id', (req, res) => {
   const deleteSubmissionSql = 'DELETE FROM submissions WHERE id = ?';
 
   db.query(deleteAnswersSql, [id], (err, result) => {
-    if (err) return res.status(500).send(err);
+    if (err) {
+        console.error('Error deleting answers for submission:', err);
+        return res.status(500).send(err);
+    }
 
     db.query(deleteSubmissionSql, [id], (err, result) => {
-      if (err) return res.status(500).send(err);
+      if (err) {
+        console.error('Error deleting submission:', err);
+        return res.status(500).send(err);
+      }
       res.json({ message: 'Submission and associated answers deleted successfully' });
     });
   });
@@ -89,7 +142,10 @@ app.delete('/api/answers/:id', (req, res) => {
   const sql = 'DELETE FROM answers WHERE id = ?';
 
   db.query(sql, [id], (err, result) => {
-    if (err) return res.status(500).send(err);
+    if (err) {
+        console.error('Error deleting answer:', err);
+        return res.status(500).send(err);
+    }
     res.json({ message: 'Answer deleted successfully' });
   });
 });
@@ -102,7 +158,10 @@ app.put('/api/answers/:id', (req, res) => {
   const params = [text_content, id];
 
   db.query(sql, params, (err, result) => {
-    if (err) return res.status(500).send(err);
+    if (err) {
+        console.error('Error updating answer:', err);
+        return res.status(500).send(err);
+    }
     res.json({ message: 'Answer updated successfully' });
   });
 });
@@ -146,6 +205,7 @@ app.get('/api/metrics/submissions', (req, res) => {
   `;
   db.query(sql, (err, results) => {
     if (err) {
+      console.error('Error fetching metrics/submissions:', err);
       return res.status(500).send(err);
     }
     res.json(results);
@@ -168,6 +228,7 @@ app.get('/api/metrics/answers', (req, res) => {
   `;
   db.query(sql, (err, results) => {
     if (err) {
+      console.error('Error fetching metrics/answers:', err);
       return res.status(500).send(err);
     }
     res.json(results);

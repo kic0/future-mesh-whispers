@@ -30,24 +30,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const submissionsList = document.getElementById('submissions');
   const detailsContent = document.getElementById('details-content');
-
-  let submissions = [];
+  const stationFilter = document.getElementById('station-filter');
+  const typeFilter = document.getElementById('type-filter');
 
   const fetchSubmissions = async () => {
+    const stationId = stationFilter.value;
+    const answerType = typeFilter.value;
+
     try {
-      const response = await fetch('/api/submissions');
+      const response = await fetch(`/api/submissions?station_id=${stationId}&answer_type=${answerType}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      submissions = await response.json();
-      renderSubmissions();
+      const submissions = await response.json();
+      renderSubmissions(submissions);
     } catch (error) {
       console.error('Error fetching submissions:', error);
       alert('Failed to fetch submissions. Please check the console for more details.');
     }
   };
 
-  const renderSubmissions = () => {
+  const populateStationFilter = async () => {
+    try {
+        const response = await fetch('/api/stations');
+        if (!response.ok) throw new Error('Failed to fetch stations');
+        const stations = await response.json();
+
+        stationFilter.innerHTML = '<option value="all">All Stations</option>';
+        stations.forEach(station => {
+            const option = document.createElement('option');
+            option.value = station.id;
+            option.textContent = station.label;
+            stationFilter.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error populating station filter:', error);
+    }
+  };
+
+
+  const renderSubmissions = (submissions) => {
     if (!submissionsList) return;
     submissionsList.innerHTML = '';
     submissions.forEach(submission => {
@@ -95,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <ul>
           ${answers.map(answer => `
             <li id="answer-${answer.id}">
-              <strong>Question ID:</strong> ${answer.question_id}<br>
+              <strong>Question:</strong> ${answer.question_title}<br>
               <strong>Type:</strong> ${answer.type}<br>
               ${answer.type === 'audio' ? `
                 <audio controls src="/api/audio/${answer.storage_path}"></audio><br>
@@ -183,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    // Convert resident back to 1 or 0
     data.resident = data.resident.toLowerCase() === 'yes' ? 1 : 0;
 
     try {
@@ -254,7 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  if (submissionsList) {
+  if (stationFilter && typeFilter) {
+    stationFilter.addEventListener('change', fetchSubmissions);
+    typeFilter.addEventListener('change', fetchSubmissions);
+
+    populateStationFilter();
     fetchSubmissions();
   }
 });
