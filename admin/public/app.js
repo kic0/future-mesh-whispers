@@ -70,20 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const { submission, answers } = await response.json();
 
+      const residentText = submission.resident === 1 ? 'yes' : 'no';
+
       detailsContent.innerHTML = `
         <h3>Submission #${submission.id}</h3>
         <form id="edit-submission-form">
           <label for="station_id">Station ID:</label>
-          <input type="text" id="station_id" name="station_id" value="${submission.station_id}" required>
+          <input type="text" id="station_id" name="station_id" value="${submission.station_id || ''}" required>
           <br>
           <label for="gender">Gender:</label>
-          <input type="text" id="gender" name="gender" value="${submission.gender}" required>
+          <input type="text" id="gender" name="gender" value="${submission.gender || ''}" required>
           <br>
           <label for="age">Age:</label>
-          <input type="number" id="age" name="age" value="${submission.age}" required>
+          <input type="text" id="age" name="age" value="${submission.age || ''}" required>
           <br>
           <label for="resident">Resident:</label>
-          <input type="text" id="resident" name="resident" value="${submission.resident}" required>
+          <input type="text" id="resident" name="resident" value="${residentText}" required>
           <br>
           <button type="submit">Update Submission</button>
         </form>
@@ -180,6 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('edit-submission-form');
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+
+    // Convert resident back to 1 or 0
+    data.resident = data.resident.toLowerCase() === 'yes' ? 1 : 0;
 
     try {
       const response = await fetch(`/api/submissions/${id}`, {
