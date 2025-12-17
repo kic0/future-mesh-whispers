@@ -13,7 +13,10 @@ export default defineConfig(({ mode }) => ({
       host: 'app.futuroemrede.com',
       protocol: 'wss',
       clientPort: 443,
-    }
+    },
+    watch: {
+      ignored: ['**/.git/**'],
+    },
   },
   plugins: [
     react(),
