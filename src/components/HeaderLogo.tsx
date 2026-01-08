@@ -12,7 +12,7 @@ const HeaderLogo = () => {
   
   const getLogoSize = () => {
     if (isHomePage) return "h-48 w-48 md:h-56 md:w-56";
-    return "h-32 w-32 landscape:h-24 landscape:w-24 md:h-40 md:w-40 md:landscape:h-28 md:landscape:w-28";
+    return "h-24 w-24 md:h-28 md:w-28";
   };
   
   const getTopPosition = () => {
