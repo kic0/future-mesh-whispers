@@ -10,7 +10,7 @@ const Demographics = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="px-6">
+    <div className="pt-20 px-6">
       <main className="container max-w-3xl">
         <Card>
           <CardHeader>

@@ -27,9 +27,9 @@ const ThankYou = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center text-center px-4 md:px-6 pt-44 md:pt-52 lg:pt-56">
+    <div className="text-center px-4 md:px-6">
       <main className="container max-w-lg space-y-6 md:space-y-8">
-        <h1 className="text-3xl md:text-4xl font-display leading-tight">Obrigado por partilhares a tua visão!</h1>
+        <h1 className="text-3xl md:text-4xl font-display leading-tight pt-22 md:pt-26 lg:pt-28">Obrigado por partilhares a tua visão!</h1>
         <p className="text-base md:text-lg text-muted-foreground">A tua participação foi registada.</p>
         <p className="text-sm md:text-base">Participante nº {count} do dia</p>
         <Button variant="hero" size="lg" asChild className="w-full md:w-auto">

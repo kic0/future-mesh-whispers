@@ -17,7 +17,7 @@ const HeaderLogo = () => {
   
   const getTopPosition = () => {
     if (isThankYouPage) return "top-4 md:top-6";
-    if (isHomePage) return "top-4 md:top-6";
+    if (isHomePage) return "top-8 md:top-10";
     return "top-6";
   };
   

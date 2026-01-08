@@ -48,7 +48,7 @@ const Question = ({ questionNumber }: { questionNumber: number }) => {
 
   if (loading) {
     return (
-      <div className="px-4 md:px-6">
+      <div className="min-h-screen flex items-center justify-center px-4 md:px-6">
         <main className="container max-w-3xl">
           <Card>
             <CardHeader>
@@ -82,7 +82,7 @@ const Question = ({ questionNumber }: { questionNumber: number }) => {
   const Icon = iconMap[icon] || MessageCircle;
 
   return (
-    <div className="px-4 md:px-6">
+    <div className="min-h-screen flex items-center justify-center px-4 md:px-6">
       <main className="container max-w-3xl">
         <Card key={question.id}>
           <CardHeader>
