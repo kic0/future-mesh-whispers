@@ -10,7 +10,7 @@ const Demographics = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
+    <div className="px-6">
       <main className="container max-w-3xl">
         <Card>
           <CardHeader>

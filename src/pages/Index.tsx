@@ -4,7 +4,7 @@ import Seo from "@/components/Seo";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center relative">
+    <div className="bg-background relative">
       <Seo
         title="Futuro em Rede"
         description="Vamos construir uma visão coletiva para a cidade."

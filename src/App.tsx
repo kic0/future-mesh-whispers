@@ -17,11 +17,11 @@ function App() {
       <SurveyProvider>
         <Router>
           <HeaderLogo />
-          <div className="App">
+          <main className="pt-40 landscape:pt-8">
             <InactivityTimeoutWrapper>
               <AppRoutes />
             </InactivityTimeoutWrapper>
-          </div>
+          </main>
           <Toaster />
           <Sonner />
         </Router>
