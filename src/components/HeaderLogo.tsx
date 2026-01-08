@@ -11,7 +11,7 @@ const HeaderLogo = () => {
   if (isReviewPage) return null;
   
   const getLogoSize = () => {
-    if (isHomePage) return "h-48 w-48 md:h-56 md:w-56";
+    if (isHomePage) return "h-24 w-24 md:h-28 md:w-28 lg:h-56 lg:w-56";
     return "h-24 w-24 md:h-28 md:w-28";
   };
   
