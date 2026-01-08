@@ -22,7 +22,7 @@ const HeaderLogo = () => {
   };
   
   return (
-    <header className={`fixed inset-x-0 z-50 pointer-events-none ${getTopPosition()}`} aria-label="Site logo">
+    <header className={`fixed landscape:static inset-x-0 z-50 pointer-events-none ${getTopPosition()}`} aria-label="Site logo">
       <div className={`container max-w-3xl mx-auto px-4 md:px-6 ${isThankYouPage ? 'text-center' : ''}`}>
         <Link
           to="/"
