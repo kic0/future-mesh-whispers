@@ -147,3 +147,8 @@ This project is built with:
 - Express.js (for the backend)
 - MySQL (for the database)
 
+# Common issues
+## Cache issues on the browser
+To clear this and test with a fresh server, you need to open the browser's DevTools (F12), go to the Application tab, then:
+- Under "Service Workers", click "Unregister"
+- Under "Cache Storage", delete the fer-cache-v1 cache

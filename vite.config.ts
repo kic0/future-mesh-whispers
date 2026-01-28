@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -8,14 +9,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "0.0.0.0",
     port: 8080,
-    allowedHosts: ['app.futuroemrede.com'],
-    hmr: {
-      host: 'app.futuroemrede.com',
-      protocol: 'wss',
-      clientPort: 443,
+    allowedHosts: ['app.futuroemrede.com','localhost'],
+    hmr: mode === 'production' ? false : {
+      host: process.env.VITE_HMR_HOST || 'localhost',
+      protocol: process.env.VITE_HMR_PROTOCOL || 'ws',
+      port: process.env.VITE_HMR_CLIENT_PORT ? parseInt(process.env.VITE_HMR_CLIENT_PORT) : 8080,
     },
     watch: {
-      ignored: ['**/.git/**'],
+      ignored: ['**/.git/**', '**/node_modules/**', '**/dist/**', '**/*.log'],
     },
   },
   plugins: [
