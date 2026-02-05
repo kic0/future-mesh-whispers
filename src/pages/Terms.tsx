@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Terms = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
+    <div className="pt-20 px-6">
       <main className="container max-w-3xl">
         <Card className="bg-card">
           <CardHeader>
