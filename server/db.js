@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mysql = require('mysql2');
 
 // Using a connection pool is a best practice for handling transient connection errors
