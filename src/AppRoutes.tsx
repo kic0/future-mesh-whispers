@@ -20,7 +20,11 @@ const QRoute = () => {
   const num = Number(id);
 
   if (loading) {
-    return null; // Or a loading spinner
+    return <div>Loading...</div>;
+  }
+
+  if (questions.length === 0) {
+    return <div>No questions are available at the moment.</div>;
   }
 
   if (isNaN(num) || num < 1 || num > questions.length) {

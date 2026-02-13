@@ -46,10 +46,14 @@ app.get('/', (req, res) => {
 
 // Endpoint to get all questions
 app.get('/questions', (req, res) => {
-  db.query('SELECT * FROM questions ORDER BY id', (err, results) => {
+  db.query('SELECT * FROM questions ORDER BY `key`', (err, results) => {
     if (err) {
+      console.error('Error fetching questions:', err);
       return res.status(500).send(err);
     }
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     res.json(results);
   });
 });
@@ -206,12 +210,16 @@ app.post('/stats/update', async (req, res) => {
 app.get('/stats', (req, res) => {
   db.query('SELECT * FROM stats', (err, results) => {
     if (err) {
+      console.error('Error fetching stats:', err);
       return res.status(500).send(err);
     }
     const stats = {};
     for (const row of results) {
       stats[row.stat_key] = row.stat_value;
     }
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     res.json(stats);
   });
 });

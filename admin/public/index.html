@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Admin Panel</h1>
+
+  <div class="tab">
+    <button class="tablinks" data-tab="submissions">Submissions</button>
+    <button class="tablinks" data-tab="grafana">Grafana Metrics</button>
+  </div>
+
+  <div id="submissions-tab" class="tabcontent">
+    <div id="app">
+      <div id="submissions-list">
+        <h2>Submissions</h2>
+        <div id="filters">
+          <label for="station-filter">Station:</label>
+          <select id="station-filter"></select>
+          <label for="type-filter">Type:</label>
+          <select id="type-filter">
+            <option value="all">All</option>
+            <option value="text">Text</option>
+            <option value="audio">Audio</option>
+          </select>
+        </div>
+        <ul id="submissions"></ul>
+      </div>
+      <div id="submission-details">
+        <h2>Submission Details</h2>
+        <div id="details-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="grafana-tab" class="tabcontent">
+    <h2>Grafana Metrics</h2>
+    <div id="grafana-placeholder">
+      <p>The Grafana dashboard will be embedded here. Replace this placeholder with the iframe code from your Grafana dashboard's "Share" panel.</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -49,13 +49,17 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [inputMode, setInputMode] = useState<'text' | 'audio' | null>(null);
 
+  // Use a ref to hold the questions for the sync function to avoid re-triggering the effect
+  const questionsRef = React.useRef<Question[]>([]);
+
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const API_URL = `${window.location.protocol}//${window.location.hostname}:3001`;
-        const response = await fetch(`${API_URL}/questions`);
+        const response = await fetch(`${API_URL}/questions`, { cache: 'no-cache' });
         const data = await response.json();
         setQuestions(data);
+        questionsRef.current = data; // Keep the ref in sync
       } catch (error) {
         console.error('Failed to fetch questions', error);
       } finally {
@@ -67,11 +71,21 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const onOnline = () => syncOutbox(questions);
+    // This effect now runs only once on mount to set up the sync interval and online listener
+    const onOnline = () => syncOutbox(questionsRef.current);
     window.addEventListener('online', onOnline);
-    syncOutbox(questions);
-    return () => window.removeEventListener('online', onOnline);
-  }, [questions]);
+
+    // Initial sync attempt
+    syncOutbox(questionsRef.current);
+
+    // Set up a periodic sync every 5 minutes
+    const intervalId = setInterval(() => syncOutbox(questionsRef.current), 5 * 60 * 1000);
+
+    return () => {
+      window.removeEventListener('online', onOnline);
+      clearInterval(intervalId);
+    };
+  }, []);
 
   const updateResponse: SurveyContextValue['updateResponse'] = (key, value) => {
     setResponses((prev) => {
